@@ -1,0 +1,11 @@
+.login-body {
+	background: url("../images/login_body.jpg") repeat;
+}
+
+.login-form {
+	background: url("../images/login_bg.png") no-repeat;
+}
+
+.ck {
+	color: red;
+}

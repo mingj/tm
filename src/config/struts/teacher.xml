@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+    "http://struts.apache.org/dtds/struts-2.1.7.dtd">
+<struts>
+
+	<package name="teacher" extends="json-default">
+		<action name="doTeacherRegister" class="TeacherAction" method="doTeacherRegister">
+				<result name="success" type="json">
+				<param name="root">ajaxStatus</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="goTeacher" class="TeacherAction" method="goTeacher">
+			<result name="success" type="dispatcher">page/TeacherMain.jsp</result>
+		</action>
+		<action name="goTeacherInfo" class="TeacherAction" method="goTeacherInfo">
+			<result name="success" type="dispatcher">page/TeacherInfo.jsp</result>
+		</action>
+		<action name="goTeacherEdit" class="TeacherAction" method="goTeacherEdit">
+			<result name="success" type="dispatcher">page/TeacherInfoEdit.jsp</result>
+		</action>
+		<action name="doTeacherEdit" class="TeacherAction" method="doTeacherEdit">
+			<result name="success" type="chain">goTeacherInfo</result>
+		</action>
+		<action name="goCourseManager" class="TeacherAction" method="goCourseManager">
+			<result name="success" type="dispatcher">page/CourseManager.jsp</result>
+		</action>
+		<action name="goCourseInfo" class="TeacherAction" method="goCourseInfo">
+			<result name="success" type="dispatcher">page/CourseInfo.jsp</result>
+		</action>
+		<action name="goCourseAdd" class="TeacherAction" method="goCourseAdd">
+			<result name="success" type="dispatcher">page/CourseAdd.jsp</result>
+		</action>
+		<action name="goCourseEdit" class="TeacherAction" method="goCourseEdit">
+			<result name="success" type="dispatcher">page/CourseEdit.jsp</result>
+		</action>
+		<action name="doCourseAdd" class="TeacherAction" method="doCourseAdd">
+			<result name="success" type="redirectAction">goCourseInfo?courseVo.id=${courseVo.id}</result>
+		</action>
+		<action name="doCourseEdit" class="TeacherAction" method="doCourseEdit">
+			<result name="success" type="chain">goCourseInfo</result>
+		</action>
+		<action name="doCourseDel" class="TeacherAction" method="doCourseDel">
+			<result name="success" type="json">
+				<param name="root">ajaxStatus</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="goTeachResource" class="TeacherAction" method="goTeachResource">
+			<result name="success" type="dispatcher">page/ResourceManager.jsp</result>
+		</action>
+		<action name="doResourceDel" class="TeacherAction" method="doResourceDel">
+			<result name="success" type="json">
+				<param name="root">ajaxStatus</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="goPublishJob" class="TeacherAction" method="goPublishJob">
+			<result name="success" type="dispatcher">page/JobManager.jsp</result>
+		</action>
+		<action name="goJobInfo" class="TeacherAction" method="goJobInfo">
+			<result name="success" type="dispatcher">page/JobInfo.jsp</result>
+		</action>
+		<action name="goJobAdd" class="TeacherAction" method="goJobAdd">
+			<result name="success" type="dispatcher">page/JobAdd.jsp</result>
+		</action>
+		<action name="goJobEdit" class="TeacherAction" method="goJobEdit">
+			<result name="success" type="dispatcher">page/JobEdit.jsp</result>
+		</action>
+		<action name="doJobAdd" class="TeacherAction" method="doJobAdd">
+			<result name="success" type="redirectAction">goJobInfo?jobVo.id=${jobVo.id}</result>
+		</action>
+		<action name="doJobEdit" class="TeacherAction" method="doJobEdit">
+			<result name="success" type="chain">goJobInfo</result>
+		</action>
+		<action name="doJobDel" class="TeacherAction" method="doJobDel">
+			<result name="success" type="json">
+				<param name="root">ajaxStatus</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="goMessageManager" class="TeacherAction" method="goMessageManager">
+			<result name="success" type="dispatcher">page/MessageManager.jsp</result>
+		</action>
+		<action name="goMessageInfo" class="TeacherAction" method="goMessageInfo">
+			<result name="success" type="dispatcher">page/MessageInfo.jsp</result>
+		</action>
+		<action name="goMessageAdd" class="TeacherAction" method="goMessageAdd">
+			<result name="success" type="dispatcher">page/MessageAdd.jsp</result>
+		</action>
+		<action name="goMessageEdit" class="TeacherAction" method="goMessageEdit">
+			<result name="success" type="dispatcher">page/MessageEdit.jsp</result>
+		</action>
+		<action name="doMessageAdd" class="TeacherAction" method="doMessageAdd">
+			<result name="success" type="redirectAction">goMessageInfo?messageVo.id=${messageVo.id}</result>
+		</action>
+		<action name="doMessageEdit" class="TeacherAction" method="doMessageEdit">
+			<result name="success" type="chain">goMessageInfo</result>
+		</action>
+		<action name="doMessageDel" class="TeacherAction" method="doMessageDel">
+			<result name="success" type="json">
+				<param name="root">ajaxStatus</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+	</package>
+</struts>

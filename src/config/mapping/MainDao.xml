@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mpgl.main.dao.MainDao">
+
+	<sql id="limit">
+		limit #{pageIndex},#{pageSize}
+	</sql>
+
+	<select id="login" parameterType="com.mpgl.vo.Form" resultType="com.mpgl.vo.UserVo">
+		SELECT 
+			* 
+		FROM
+			t_user_info 
+		WHERE 1=1 
+			AND username = #{username}
+			AND password = #{password}
+			<if test="role_id != null and role_id != ''">
+			AND role_id = #{role_id}
+			</if>
+			AND isLock = '0'
+	</select>
+	
+	<update id="updateUserPassword" parameterType="Map" >
+		UPDATE 
+			t_user_info
+		SET
+			password=#{password}
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<select id="queryRoleByUser" parameterType="com.mpgl.vo.UserVo" resultType="com.mpgl.vo.RoleVo">
+		SELECT
+			t1.*
+		FROM 
+			t_role_info t1,
+			t_user_info t2
+		WHERE 1=1 
+			AND t1.id = t2.role_id
+			AND t2.id = #{id}
+	</select>
+	
+	<select id="queryMenuByRole" parameterType="com.mpgl.vo.RoleVo" resultType="com.mpgl.vo.MenuVo">
+		SELECT t3.id,t3.name
+		FROM 
+			t_role_submenu_rec t1, t_submenu_info t2,t_menu_info t3 
+		WHERE t1.submenu_id = t2.id AND t3.id=t2.menu_id AND t1.role_id = #{id}
+		GROUP BY t3.id,t3.name
+		ORDER BY t3.id 
+	</select>
+	
+	<select id="querySubMenuByMenu" parameterType="Map" resultType="com.mpgl.vo.SubMenuVo">
+		SELECT
+			t1.*
+		FROM
+			t_submenu_info t1,
+			t_role_submenu_rec t2
+		WHERE 1=1
+			AND t2.submenu_id = t1.id
+			AND t2.role_id = #{role_id}
+			AND t1.menu_id = #{menu_id}
+		ORDER BY order_num
+	</select>
+	
+	<select id="checkUserName" parameterType="com.mpgl.vo.UserVo" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM t_user_info where username = #{username}
+	</select>
+	
+	<select id="queryUserListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT t1.*,t2.id AS role_id,t2.name AS role_name FROM t_user_info t1,t_role_info t2
+		WHERE 1=1
+			AND t1.role_id = t2.id
+			<if test="username != null and username != ''">
+				AND t1.username LIKE CONCAT('%',#{username},'%') 
+			</if>
+			<if test="role_id != null and role_id != ''">
+				AND t1.role_id = #{role_id}
+			</if>
+			<if test="user_id != null and user_id != ''">
+				AND t1.id = #{user_id}
+			</if>
+			<if test="isLock != null and isLock != ''">
+				AND t1.isLock = #{isLock}
+			</if>
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%', #{name}, '%')
+			</if>
+		ORDER BY t1.id DESC
+	</select>
+	
+	<select id="queryUserList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT t1.*,t2.id AS role_id,t2.name AS role_name FROM t_user_info t1,t_role_info t2
+		WHERE 1=1
+			AND t1.role_id = t2.id
+			<if test="username != null and username != ''">
+				AND t1.username LIKE CONCAT('%',#{username},'%') 
+			</if>
+			<if test="role_id != null and role_id != ''">
+				AND t1.role_id = #{role_id}
+			</if>
+			<if test="user_id != null and user_id != ''">
+				AND t1.id = #{user_id}
+			</if>
+			<if test="isLock != null and isLock != ''">
+				AND t1.isLock = #{isLock}
+			</if>
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%', #{name}, '%')
+			</if>
+		ORDER BY t1.id DESC
+		<include refid="limit"/>
+	</select>
+	<select id="queryUserListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM t_user_info t1,t_role_info t2
+		WHERE 1=1
+			AND t1.role_id = t2.id
+			<if test="username != null and username != ''">
+				AND t1.username LIKE CONCAT('%',#{username},'%') 
+			</if>
+			<if test="role_id != null and role_id != ''">
+				AND t1.role_id = #{role_id}
+			</if>
+			<if test="user_id != null and user_id != ''">
+				AND t1.id = #{user_id}
+			</if>
+			<if test="isLock != null and isLock != ''">
+				AND t1.isLock = #{isLock}
+			</if>
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%', #{name}, '%')
+			</if>
+	</select>
+	
+	<select id="queryRoleList" resultType="Map">
+		SELECT * FROM t_role_info
+	</select>
+	<select id="queryRoleRefPage" parameterType="Map" resultType="Integer">
+		SELECT submenu_id AS id FROM t_role_submenu_rec WHERE 1=1
+		AND role_id = #{id}
+	</select>
+	<select id="queryPageList" resultType="Map">
+		SELECT 
+		  t1.*,
+		  t1.id as role_id,
+		  'false' AS ck ,
+		  t3.name as father_name
+		FROM
+		  t_submenu_info t1 
+		  LEFT JOIN t_menu_info t3
+ 		  ON t1.menu_id = t3.id
+		WHERE 1=1
+	</select>
+	
+	<select id="queryRoleListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT * FROM t_role_info t1
+		WHERE 1=1
+			<if test="id != null and id != ''">
+				AND t1.id = #{id}
+			</if>
+		ORDER BY t1.id DESC
+	</select>
+	<select id="queryRoleLists" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT * FROM t_role_info t1
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%',#{name},'%') 
+			</if>
+		ORDER BY t1.id DESC
+		<include refid="limit"/>
+	</select>
+	<select id="queryRoleListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT count(1) FROM t_role_info t1
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%',#{name},'%') 
+			</if>
+	</select>
+	<insert id="addRoleRefPage" parameterType="com.mpgl.vo.RoleVo">
+		INSERT INTO t_role_submenu_rec (role_id,submenu_id) 
+		VALUES 
+		(
+			<if test="newId != null and newId != ''">
+				#{newId},
+			</if>
+			<if test="newId == null or newId == ''">
+				#{id},
+			</if>
+			#{submenu_id}
+		)
+	</insert>
+	<delete id="deleteRoleRefPage" parameterType="com.mpgl.vo.RoleVo">
+		DELETE FROM t_role_submenu_rec WHERE role_id = #{id}
+	</delete>
+	<insert id="addRole" parameterType="com.mpgl.vo.RoleVo">
+		<selectKey resultType="int" order="AFTER" keyProperty="newId">
+			SELECT LAST_INSERT_ID() AS newId
+		</selectKey>
+		INSERT INTO t_role_info 
+		(
+		  name
+		) 
+		VALUES
+		(
+		  #{name}
+		)
+	</insert>
+	<update id="updateRole" parameterType="com.mpgl.vo.RoleVo">
+		UPDATE 
+			t_role_info
+		SET 
+		  name = #{name}
+		WHERE id = #{id}
+	</update>
+	<delete id="deleteRole" parameterType="com.mpgl.vo.RoleVo">
+		DELETE FROM t_role_info WHERE id = #{id}
+	</delete>
+	
+	<select id="queryDictionaryByKey" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT * FROM t_dictionary_info WHERE 1=1 
+		<if test="dictionaryKey != null and dictionaryKey != ''">
+			AND dictionary_key = #{dictionaryKey}
+		</if>
+	</select>
+	
+	<insert id="addUser" parameterType="com.mpgl.vo.UserVo">
+		INSERT INTO t_user_info 
+		(
+		  username,
+		  password,
+		  role_id,
+		  create_time,
+		  isLock,
+		  name
+		) 
+		VALUES
+		(
+		  #{username},
+		  #{password},
+		  #{role_id},
+		  #{create_time},
+		  #{isLock},
+		  #{name}
+		)
+	</insert>
+	<update id="updateUser" parameterType="com.mpgl.vo.UserVo">
+		UPDATE 
+			t_user_info
+		SET 
+		  username = #{username},
+		  password = #{password},
+		  role_id = #{role_id},
+		  update_time = #{update_time},
+		  isLock = #{isLock},
+		  name = #{name}
+		WHERE id = #{id}
+	</update>
+	<delete id="deleteUser" parameterType="com.mpgl.vo.UserVo">
+		DELETE FROM t_user_info WHERE id = #{id}
+	</delete>
+	
+	<select id="queryCombobx" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT ${comboboxKey} as textField, ${comboboxValue} as valueField FROM ${comboboxTable} WHERE 1=1 
+		<if test="comboboxWhere != null and comboboxWhere != ''">
+			${comboboxWhere}
+		</if>
+	</select>
+	
+	<insert id="saveFile" parameterType="Map">
+		INSERT INTO tm.t_file_info
+            (id,
+             file_name,
+             file_path,
+             teacher_id,
+             course_id,
+             create_date,	
+             resource_type,
+             extension)
+		VALUES (#{id},
+		        #{file_name},
+		        #{file_path},
+		        #{teacher_id},
+		        #{course_id},
+		        #{create_date},
+		        #{resouce_type},
+		        #{extension});
+	</insert>
+	
+	<select id="queryTeacherList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT
+		  id,
+		  name,
+		  code,
+		  id_number,
+		  profession,
+		  org_id,
+		  orgName(org_id) as org_name,
+		  age,
+		  nameByCode('SEX',sex) as sex,
+		  mobile,
+		  email,
+		  description
+		FROM 
+			t_teacher_info
+		WHERE 1=1
+		 	<if test="code != null and code != ''">
+		 		AND code = #{code} 
+		 	</if>
+		ORDER BY CODE DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryTeacherListCount" parameterType="com.mpgl.vo.Form" resultType="Integer">
+		SELECT
+		  count(1)
+		FROM 
+			t_teacher_info
+		WHERE 1=1
+		 	<if test="code != null and code != ''">
+		 		AND code = #{code} 
+		 	</if>
+	</select>
+	
+	<select id="queryStudentList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT
+		  id,
+		  name,
+		  code,
+		  id_number,
+		  org_id,
+		  orgName(org_id) as org_name,
+		  classes,
+		  nameByCode('SEX',sex) as sex,
+		  age,
+		  mobile,
+		  email
+		FROM 
+			t_student_info
+		WHERE 1=1
+		 	<if test="code != null and code != ''">
+		 		AND code = #{code} 
+		 	</if>
+		ORDER BY CODE DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryStudentListCount" parameterType="com.mpgl.vo.Form" resultType="Integer">
+		SELECT
+		  count(1)
+		FROM 
+			t_student_info
+		WHERE 1=1
+		 	<if test="code != null and code != ''">
+		 		AND code = #{code} 
+		 	</if>
+	</select>
+	
+	<insert id="addTeacherCode" parameterType="com.mpgl.vo.TeacherVo">
+		insert into t_teacher_info (code) values(#{code})
+	</insert>
+	<delete id="deleteTeacherCode" parameterType="com.mpgl.vo.TeacherVo">
+		delete from t_teacher_info where id = #{id}
+	</delete>
+
+	<insert id="addStudentCode" parameterType="com.mpgl.vo.StudentVo">
+		insert into t_student_info (code) values(#{code})
+	</insert>
+	<delete id="deleteStudentCode" parameterType="com.mpgl.vo.StudentVo">
+		delete from t_student_info where id = #{id}
+	</delete>
+	
+	<select id="queryOrgList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT
+		  *
+		FROM 
+			t_org_info
+		WHERE 1=1
+		 	<if test="name != null and name != ''">
+		 		AND name like concat('%', #{name},'%')
+		 	</if>
+		ORDER BY id DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryOrgListCount" parameterType="com.mpgl.vo.Form" resultType="Integer">
+		SELECT
+		  count(1)
+		FROM 
+			t_org_info
+		WHERE 1=1
+		 	<if test="name != null and name != ''">
+		 		AND name like concat('%', #{name},'%')
+		 	</if>
+	</select>
+	
+	<insert id="addOrg" parameterType="com.mpgl.vo.OrgVo">
+		insert into t_org_info (name) values(#{name})
+	</insert>
+	<update id="updateOrg" parameterType="com.mpgl.vo.OrgVo">
+		UPDATE T_ORG_INFO SET NAME = #{name} WHERE id = #{id}
+	</update>
+	<delete id="deleteOrg" parameterType="com.mpgl.vo.OrgVo">
+		delete from t_org_info where id = #{id}
+	</delete>
+</mapper> 

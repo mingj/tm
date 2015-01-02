@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+    "http://struts.apache.org/dtds/struts-2.1.7.dtd">
+<struts>
+	<!-- 全局处理请求Action的404错误 -->
+	<package name="default" extends="struts-default">
+	   <default-action-ref name="notFound" />
+	   <action name="notFound">
+	   		<result>../page/error/404.html</result>
+	   </action>
+	</package>
+	
+	<!-- 全局跳转 -->
+<!-- 	<global-results>    -->
+<!--         <result name="goLogin">/main/goLogin.do</result>  -->
+<!--         <result name="exception">/page/error/505.html</result>      -->
+<!--    	</global-results> -->
+
+	<package name="main" namespace="/main" extends="json-default">
+		<action name="goWelcome" class="MainAction" method="goWelcome">
+			<result name="success" type="redirect">../page/Welcome.jsp</result>
+		</action>
+		<action name="goLogin" class="MainAction" method="goLogin">
+			<result name="success" type="redirect">../page/Login.jsp</result>
+		</action>
+		<action name="goAdminLogin" class="MainAction" method="goLogin">
+			<result name="success" type="redirect">../page/AdminLogin.jsp</result>
+		</action>
+		<action name="login" class="MainAction" method="login">
+			<result name="success" type="redirect">../page/Main.jsp</result>
+			<result name="teacher" type="redirectAction">../goTeacher</result>
+			<result name="student" type="redirectAction">../goStudent</result>
+			<result name="input" type="redirect">../page/Login.jsp?error=${error}</result>
+		</action>
+		<action name="doQueryPwd" class="MainAction" method="doQueryPwd">
+			<result name="success" type="json">
+				<param name="root">user</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdatePassword" class="MainAction" method="doUpdatePassword">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="goLoginOut" class="MainAction" method="goLoginOut">
+			<result name="success" type="redirect">../page/Login.jsp</result>
+			<result name="input" type="redirect">../page/Login.jsp</result>
+		</action>
+		<!-- 用户管理 -->
+		<action name="goUserManager" class="MainAction" method="goUserManager">
+			<result name="success" type="redirect">../page/UserManager.jsp</result>
+		</action>
+		
+		<action name="doAddUser" class="MainAction" method="doAddUser">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateUser" class="MainAction" method="doUpdateUser">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteUser" class="MainAction" method="doDeleteUser">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="queryUserByJson" class="MainAction" method="queryUserByJson">
+			<result name="success" type="json">
+				<param name="root">userMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="queryUserDataGridByJson" class="MainAction" method="queryUserDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">userGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="queryRoleListByJson" class="MainAction" method="queryRoleListByJson">
+			<result name="success" type="json">
+				<param name="root">roleCombobox</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="querySelectByJson" class="MainAction" method="querySelectByJson">
+			<result name="success" type="json">
+				<param name="root">comboboxs</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="queryDictionaryByJson" class="MainAction" method="queryDictionaryByJson">
+			<result name="success" type="json">
+				<param name="root">dictionaryList</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<!-- 角色管理  -->
+		<action name="goRoleManager" class="MainAction" method="goRoleManager">
+			<result name="success" type="redirect">../page/RoleManager.jsp</result>
+		</action>
+		
+		<action name="queryRoleByJson" class="MainAction" method="queryRoleByJson">
+			<result name="success" type="json">
+				<param name="root">roleMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+				
+		<action name="queryRoleDataGridByJson" class="MainAction" method="queryRoleDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">roleGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doAddRole" class="MainAction" method="doAddRole">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateRole" class="MainAction" method="doUpdateRole">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteRole" class="MainAction" method="doDeleteRole">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="uploadFile" class="MainAction" method="uploadFile">
+			<!-- 动态设置savePath的属性值 -->
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+			<result name="input" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="downloadFile" class="FileDownloadAction">
+			<result name="success" type="stream">  
+               <param name="contentType">text/plain</param>  
+               <param name="contentDisposition">attachment;fileName="${fileName}"</param>  
+               <param name="inputName">ins</param>  
+               <param name="bufferSize">4096</param>  
+           </result> 
+		</action>
+		
+		<action name="goTeacherManager" class="MainAction" method="goTeacherManager">
+			<result name="success" type="dispatcher">../page/AdminTeacherManager.jsp</result>
+		</action>
+		
+		<action name="queryTeacherDataGridByJson" class="MainAction" method="queryTeacherDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">gridMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="doAddTeacherCode" class="MainAction" method="doAddTeacherCode">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="doDeleteTeacherCode" class="MainAction" method="doDeleteTeacherCode">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="goStudentManager" class="MainAction" method="goStudentManager">
+			<result name="success" type="dispatcher">../page/AdminStudentManager.jsp</result>
+		</action>
+		
+		<action name="queryStudentDataGridByJson" class="MainAction" method="queryStudentDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">gridMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="doAddStudentCode" class="MainAction" method="doAddStudentCode">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="doDeleteStudentCode" class="MainAction" method="doDeleteStudentCode">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="goOrgManager" class="MainAction" method="goOrgManager">
+			<result name="success" type="dispatcher">../page/OrgManager.jsp</result>
+		</action>
+		
+		<action name="queryOrgDataGridByJson" class="MainAction" method="queryOrgDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">gridMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doAddOrg" class="MainAction" method="doAddOrg">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateOrg" class="MainAction" method="doUpdateOrg">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteOrg" class="MainAction" method="doDeleteOrg">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+	</package>
+</struts>

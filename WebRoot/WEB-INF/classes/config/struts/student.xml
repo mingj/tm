@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+    "http://struts.apache.org/dtds/struts-2.1.7.dtd">
+<struts>
+	<package name="student" extends="json-default">
+		<action name="doStudentRegister" class="StudentAction" method="doStudentRegister">
+				<result name="success" type="json">
+				<param name="root">ajaxStatus</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="goStudent" class="StudentAction" method="goStudent">
+			<result name="success" type="dispatcher">page/StudentMain.jsp</result>
+		</action>
+		<action name="goStudentInfo" class="StudentAction" method="goStudentInfo">
+			<result name="success" type="dispatcher">page/StudentInfo.jsp</result>
+		</action>
+		<action name="goStudentEdit" class="StudentAction" method="goStudentEdit">
+			<result name="success" type="dispatcher">page/StudentEdit.jsp</result>
+		</action>
+		<action name="doStudentEdit" class="StudentAction" method="doStudentEdit">
+			<result name="success" type="redirectAction">goStudentInfo</result>
+		</action>
+		
+		<action name="goStudentCourse" class="StudentAction" method="goStudentCourse">
+			<result name="success" type="dispatcher">page/StudentCourse.jsp</result>
+		</action>
+		<action name="goStudentCourseInfo" class="StudentAction" method="goStudentCourseInfo">
+			<result name="success" type="dispatcher">page/StudentCourseInfo.jsp</result>
+		</action>
+		
+		<action name="goStudentCourseJobInfo" class="StudentAction" method="goStudentCourseJobInfo">
+			<result name="success" type="dispatcher">page/StudentCourseJobInfo.jsp</result>
+		</action>
+		
+		<action name="goStudentResource" class="StudentAction" method="goStudentResource">
+			<result name="success" type="dispatcher">page/StudentResource.jsp</result>
+		</action>
+		
+		<action name="goStudentMessage" class="StudentAction" method="goStudentMessage">
+			<result name="success" type="dispatcher">page/StudentMessage.jsp</result>
+		</action>
+		<action name="goStudentMessageInfo" class="StudentAction" method="goStudentMessageInfo">
+			<result name="success" type="dispatcher">page/StudentMessageInfo.jsp</result>
+		</action>
+		
+		<action name="doElective" class="StudentAction" method="doElective">
+			<result name="success" type="json">
+				<param name="root">ajaxStatus</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUnElective" class="StudentAction" method="doUnElective">
+			<result name="success" type="json">
+				<param name="root">ajaxStatus</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+	</package>
+</struts>

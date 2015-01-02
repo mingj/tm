@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mpgl.main.dao.StudentDao">
+	<select id="queryUser" parameterType="com.mpgl.vo.UserVo" resultType="com.mpgl.vo.UserVo">
+		SELECT * FROM t_user_info where username = #{username}
+	</select>
+
+	<sql id="limit">
+		limit #{startIndex},#{endIndex}
+	</sql>
+
+	<select id="queryMessagePageList" parameterType="Map" resultType="com.mpgl.vo.MessageVo">
+		SELECT
+		  id,
+		  title,
+		  content,
+		  teacher_id,
+		  teacherName(teacher_id) as teacher_name,
+		  course_id,
+		  courseName(course_id) as course_name,
+		  create_date
+		FROM t_message_info
+		WHERE 1=1
+			<if test="student_id != null and student_id != ''">
+		 		AND course_id IN (SELECT course_id FROM `t_student_course_rec` WHERE student_id = #{student_id})
+		 	</if>
+			<if test="course_id != null and course_id != ''">
+		 		AND course_id = #{course_id}
+		 	</if>
+			<if test="title != null and title != ''">
+		 		AND title like CONCAT('%',#{title}, '%')
+		 	</if>
+		 order by id desc
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryMessageListCount" parameterType="Map" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM t_message_info
+		WHERE 1=1
+			<if test="student_id != null and student_id != ''">
+		 		AND course_id IN (SELECT course_id FROM `t_student_course_rec` WHERE student_id = #{student_id})
+		 	</if>
+		 	<if test="course_id != null and course_id != ''">
+		 		AND course_id = #{course_id}
+		 	</if>
+			<if test="title != null and title != ''">
+		 		AND title like CONCAT('%',#{title}, '%')
+		 	</if>
+	</select>
+	
+	<select id="queryMessageList" parameterType="Map" resultType="com.mpgl.vo.MessageVo">
+		SELECT
+		  id,
+		  title,
+		  content,
+		  teacher_id,
+		  teacherName(teacher_id) as teacher_name,
+		  course_id,
+		  courseName(course_id) as course_name,
+		  create_date
+		FROM t_message_info
+		WHERE 1=1
+			<if test="student_id != null and student_id != ''">
+		 		AND course_id IN (SELECT course_id FROM `t_student_course_rec` WHERE student_id = #{student_id})
+		 	</if>
+			<if test="id != null and id != ''">
+		 		AND id = #{id}
+		 	</if>
+		 order by id desc
+	</select>
+
+	<select id="queryStudent" parameterType="Map" resultType="com.mpgl.vo.StudentVo">
+		SELECT
+		  id,
+		  name,
+		  code,
+		  id_number,
+		  org_id,
+		  orgName(org_id) as org_name,
+		  classes,
+		  nameByCode('SEX',sex) as sex,
+		  age,
+		  mobile,
+		  email
+		FROM 
+			t_student_info
+		WHERE 1=1
+		 	<if test="code != null and code != ''">
+		 		AND code = #{code} 
+		 	</if>
+	</select>
+	
+	<select id="queryCourseList" parameterType="Map" resultType="com.mpgl.vo.CourseVo">
+		SELECT
+		  id,
+		  name,
+		  description,
+		  teacher_id,
+		  teacherName(teacher_id) as teacher_name,
+		  create_date,
+		  nameByCode('COURSE_STATUS',status) as status,
+		  code
+		FROM t_course_info
+		WHERE 1=1
+			<if test="status == 'select'">
+				AND id IN (SELECT COURSE_ID FROM t_student_course_rec WHERE STUDENT_ID=#{student_id})
+			</if>
+			<if test="status == 'unselect'">
+				AND id NOT IN (SELECT COURSE_ID FROM t_student_course_rec WHERE STUDENT_ID=#{student_id})
+			</if>
+			<if test="course_id != null and course_id != ''">
+				AND id = #{course_id}
+			</if>
+		order by id desc
+	</select>
+	
+	<select id="queryCoursePageList" parameterType="Map" resultType="com.mpgl.vo.CourseVo">
+		SELECT
+		  id,
+		  name,
+		  description,
+		  teacher_id,
+		  teacherName(teacher_id) as teacher_name,
+		  create_date,
+		  nameByCode('COURSE_STATUS',status) as status,
+		  code,
+		  t2.student_id AS isSelect
+		FROM 
+			t_course_info t1 
+		LEFT JOIN
+			(SELECT * FROM t_student_course_rec WHERE STUDENT_ID=#{student_id}) t2
+		ON 	t1.id = t2.course_id
+		WHERE 1=1
+			<if test="status == 'select'">
+				AND id IN (SELECT COURSE_ID FROM t_student_course_rec WHERE STUDENT_ID=#{student_id})
+			</if>
+			<if test="status == 'unselect'">
+				AND id NOT IN (SELECT COURSE_ID FROM t_student_course_rec WHERE STUDENT_ID=#{student_id})
+			</if>
+			<if test="code != null and code != ''">
+				AND code = #{code}
+			</if>
+			<if test="course_name != null and course_name != ''">
+				AND name LIKE CONCAT('%', #{course_name},'%') 
+			</if>
+		order by id desc
+		<include refid="limit"/>
+	</select>
+	<select id="queryCoursePageListCount" parameterType="Map" resultType="Integer">
+		SELECT
+			count(1)
+		FROM 
+			t_course_info t1 
+		LEFT JOIN
+			(SELECT * FROM t_student_course_rec WHERE STUDENT_ID=#{student_id}) t2
+		ON 	t1.id = t2.course_id
+		WHERE 1=1
+			<if test="status == 'select'">
+				AND id IN (SELECT COURSE_ID FROM t_student_course_rec WHERE STUDENT_ID=#{student_id})
+			</if>
+			<if test="status == 'unselect'">
+				AND id NOT IN (SELECT COURSE_ID FROM t_student_course_rec WHERE STUDENT_ID=#{student_id})
+			</if>
+			<if test="code != null and code != ''">
+				AND code = #{code}
+			</if>
+			<if test="course_name != null and course_name != ''">
+				AND name LIKE CONCAT('%', #{course_name},'%') 
+			</if>
+	</select>
+	
+	<!-- 查询资源库列表分页 -->
+	<select id="queryResourcePageList" parameterType="Map" resultType="com.mpgl.vo.ResourceVo">
+		SELECT
+		  id,
+		  file_name,
+		  file_path,
+		  teacher_id,
+		  teacherName(teacher_id) as teacher_name,
+		  course_id,
+		  courseName(course_id) as course_name,
+		  create_date,
+		  resource_type,
+		  nameByCode('RESOURCE_TYPE',resource_type) as resource_type_name,
+		  extension
+		FROM t_file_info
+		WHERE 1=1
+			<if test="course_id != null and course_id != ''">
+		 		AND course_id = #{course_id} 
+		 	</if>
+			<if test="resource_type != null and resource_type != ''">
+		 		AND resource_type = #{resource_type} 
+		 	</if>
+		 	<if test="file_id != null and file_id != ''">
+		 		AND id = #{file_id} 
+		 	</if>
+		 	<if test="file_name != null and file_name != ''">
+		 		AND file_name like CONCAT('%',#{file_name},'%')
+		 	</if>
+		 	<if test="student_id != null and student_id != ''">
+		 		AND (course_id IN (SELECT COURSE_ID FROM t_student_course_rec WHERE student_id = #{student_id}) OR course_id is null)
+		 	</if>
+		order by id desc
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryResourceListCount" parameterType="Map" resultType="Integer">
+		SELECT
+			COUNT(1)
+		FROM t_file_info
+		WHERE 1=1
+	 		<if test="course_id != null and course_id != ''">
+		 		AND course_id = #{course_id} 
+		 	</if>
+			<if test="resource_type != null and resource_type != ''">
+		 		AND resource_type = #{resource_type} 
+		 	</if>
+		 	<if test="file_id != null and file_id != ''">
+		 		AND id = #{file_id} 
+		 	</if>
+		 	<if test="file_name != null and file_name != ''">
+		 		AND file_name like CONCAT('%',#{file_name},'%')
+		 	</if>
+		 	<if test="student_id != null and student_id != ''">
+		 		AND (course_id IN (SELECT COURSE_ID FROM t_student_course_rec WHERE student_id = #{student_id}) OR course_id is null)
+		 	</if>
+		 	OR course_id is null
+	</select>
+	
+	<select id="queryResourceList" parameterType="Map" resultType="com.mpgl.vo.ResourceVo">
+		SELECT
+		  id,
+		  file_name,
+		  file_path,
+		  teacher_id,
+		  teacherName(teacher_id) as teacher_name,
+		  course_id,
+		  courseName(course_id) as course_name,
+		  create_date,
+		  resource_type,
+		  nameByCode('RESOURCE_TYPE',resource_type) as resource_type_name,
+		  extension
+		FROM t_file_info
+		WHERE 1=1
+			<if test="teacher_id != null and teacher_id != ''">
+		 		AND teacher_id = #{teacher_id} 
+		 	</if>
+			<if test="course_id != null and course_id != ''">
+		 		AND course_id = #{course_id} 
+		 	</if>
+			<if test="resource_type != null and resource_type != ''">
+		 		AND resource_type = #{resource_type} 
+		 	</if>
+			<if test="file_id != null and file_id != ''">
+		 		AND id = #{file_id} 
+		 	</if>
+		 	<if test="file_name != null and file_name != ''">
+		 		AND file_name like CONCAT('%',#{file_name},'%')
+		 	</if>
+	</select>
+	
+	<select id="queryJobByCourseList" parameterType="Map" resultType="com.mpgl.vo.JobVo">
+		SELECT 
+			id,
+			content,
+			title,
+			teacher_id,
+			course_id,
+			create_date,
+			finish_date,
+			teacherName(teacher_id) as teacher_name,
+			courseName(course_id) as course_name,
+			nameByCode('JOB_STATUS',status) AS status
+		FROM
+			t_job_info
+		WHERE 1=1
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="course_id != null and course_id != ''">
+				AND course_id = #{course_id}
+			</if>
+		ORDER BY id DESC
+	</select>
+	
+	<insert id="electiveCourse" parameterType="com.mpgl.vo.StudentCourseVo">
+		INSERT INTO
+			t_student_course_rec
+		(
+			student_id,
+			course_id
+		)
+		VALUES 
+		(
+			#{student_id},
+			#{course_id}
+		)
+	</insert>
+	
+	<insert id="registerUser" parameterType="com.mpgl.vo.UserVo">
+		insert into t_user_info
+          (
+           username,
+           PASSWORD,
+           NAME,
+           role_id,
+           create_time,
+           isLock
+          )
+		values 
+		(
+        	#{username},
+        	#{password},
+       		#{name},
+        	#{role_id},
+        	#{create_time},
+        	'0'
+        )
+	</insert>
+	
+	<update id="registerStudent" parameterType="com.mpgl.vo.StudentVo">
+		UPDATE 
+			t_student_info 
+		SET
+			name = #{name},
+			code = #{code},
+			classes = #{classes},
+			age = #{age},
+			email = #{email},
+			org_id = #{org_id},
+			sex = #{sex},
+			id_number = #{id_number},
+			mobile = #{mobile}
+		WHERE 1=1
+			AND id = #{id} 
+	</update>
+	
+	<update id="editStudent" parameterType="com.mpgl.vo.StudentVo">
+		UPDATE 
+			t_student_info
+		SET
+			name = #{name},
+			age = #{age},
+			mobile = #{mobile},
+			email = #{email}
+		WHERE 1=1
+			AND id = #{id}
+	</update>
+	
+	<delete id="unElectiveCourse" parameterType="com.mpgl.vo.StudentCourseVo">
+		DELETE FROM t_student_course_rec WHERE student_id = #{student_id} AND course_id = #{course_id}
+	</delete>
+</mapper>
